@@ -18,7 +18,7 @@ import (
 
 //check the hash to see if it meets the set of requirements
 
-const Diff int = 2
+const Diff int = 4
 
 type ProofOfWork struct {
 	Block  *Block
@@ -40,9 +40,9 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 
 	for nonce < math.MaxInt64 {
 		data := pow.InitData(nonce)
-		hash := sha256.Sum256(data)
-		fmt.Printf("%x\n", hash)
+		hash = sha256.Sum256(data)
 
+		fmt.Printf("\r%x", hash)
 		intHash.SetBytes(hash[:])
 
 		if intHash.Cmp(pow.Target) == -1 {
@@ -50,9 +50,9 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 		} else {
 			nonce++
 		}
-	}
 
-	fmt.Println("Found Block")
+	}
+	fmt.Println()
 
 	return nonce, hash[:]
 }

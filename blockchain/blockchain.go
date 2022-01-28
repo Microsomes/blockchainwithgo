@@ -26,6 +26,7 @@ func InitMainChain() *BlockChain {
 
 	opts := badger.DefaultOptions(dbPath)
 	opts.ValueDir = dbPath
+	opts.Logger = nil
 
 	db, err := badger.Open(opts)
 

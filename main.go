@@ -40,13 +40,12 @@ func (cli *CommandLine) printChain() {
 	for {
 		block := iter.Next()
 
-		fmt.Printf("Prev. Hash: %x\n", block.PrevHash)
-		fmt.Printf("Data $s\n", block.Data)
+		fmt.Printf("Prev. hash: %x\n", block.PrevHash)
+		fmt.Printf("Data: %s\n", block.Data)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := blockchain.NewProof(block)
-
-		fmt.Printf("POW: %s\n", strconv.FormatBool(pow.Validate()))
-		fmt.Println("")
+		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
+		fmt.Println()
 
 		if len(block.PrevHash) == 0 {
 			break
@@ -90,6 +89,7 @@ func (cli *CommandLine) run() {
 
 func main() {
 
+	defer os.Exit(0)
 	chain := blockchain.InitMainChain()
 
 	defer chain.Database.Close()
