@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"runtime"
@@ -47,9 +48,54 @@ func (cli *CommandLine) printChain() {
 		fmt.Printf("POW: %s\n", strconv.FormatBool(pow.Validate()))
 		fmt.Println("")
 
+		if len(block.PrevHash) == 0 {
+			break
+		}
+
 	}
 }
 
+func (cli *CommandLine) run() {
+	cli.validateArgs()
+
+	addBlockCmd := flag.NewFlagSet("add", flag.ExitOnError)
+	printChainCmd := flag.NewFlagSet("print", flag.ExitOnError)
+	addBlockData := addBlockCmd.String("block", "", "Block data")
+
+	switch os.Args[1] {
+	case "add":
+		err := addBlockCmd.Parse(os.Args[2:])
+		blockchain.HandleError(err)
+	case "print":
+		err := printChainCmd.Parse(os.Args[2:])
+		blockchain.HandleError(err)
+	default:
+		cli.printUsage()
+		runtime.Goexit()
+	}
+
+	if addBlockCmd.Parsed() {
+		if *addBlockData == "" {
+			addBlockCmd.Usage()
+			runtime.Goexit()
+		}
+		cli.addBlock(*addBlockData)
+	}
+
+	if printChainCmd.Parsed() {
+		cli.printChain()
+	}
+
+}
+
 func main() {
+
+	chain := blockchain.InitMainChain()
+
+	defer chain.Database.Close()
+
+	cli := CommandLine{chain}
+
+	cli.run()
 
 }
