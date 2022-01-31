@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/microsomes/blockchainwithgo/blockchain"
+	"github.com/microsomes/blockchainwithgo/wallet"
 )
 
 type CommandLine struct{}
@@ -20,6 +21,24 @@ func (cli *CommandLine) printUsage() {
 	fmt.Println(" printchain - Prints the blocks in the chain")
 	fmt.Println(" send -from FROM -to TO -amount AMOUNT - Send amount of coins")
 	fmt.Println(" getblock -hash HASH- get block info")
+	fmt.Println(" createwallet - Creates a new Wallet")
+	fmt.Println(" listaddresses - Lists the addresses in our wallet file")
+}
+
+func (cli *CommandLine) listAddresses() {
+	wallets, _ := wallet.CreateWallet()
+	addresses := wallets.GetAllAddresses()
+	for _, address := range addresses {
+		fmt.Println(address)
+	}
+}
+
+func (cli *CommandLine) createWalet() {
+	wallets, _ := wallet.CreateWallet()
+	address := wallets.AddWallet()
+	wallets.SaveFile()
+
+	fmt.Printf("New address is: %s\n", address)
 }
 
 func (cli *CommandLine) getBlock(hash string) {
@@ -123,6 +142,9 @@ func (cli *CommandLine) Run() {
 
 	getBlockCmd := flag.NewFlagSet("getblock", flag.ExitOnError)
 
+	createWalletCmd := flag.NewFlagSet("createwallet", flag.ExitOnError)
+	listAddressCmd := flag.NewFlagSet("listaddresses", flag.ExitOnError)
+
 	getBalanceAddress := getBalanceCmd.String("address", "", "The address to get the blanace for")
 	createBlockchainAddress := createBlockchainCmd.String("address", "", "The address to send the genesis block reward to")
 	sendFrom := sendCmd.String("from", "", "Source wallet address")
@@ -132,6 +154,12 @@ func (cli *CommandLine) Run() {
 	getBlockHash := getBlockCmd.String("hash", "", "Hash of block")
 
 	switch os.Args[1] {
+	case "createwallet":
+		err := createWalletCmd.Parse(os.Args[2:])
+		blockchain.HandleError(err)
+	case "listaddresses":
+		err := listAddressCmd.Parse(os.Args[2:])
+		blockchain.HandleError(err)
 	case "getbalance":
 		err := getBalanceCmd.Parse(os.Args[2:])
 		blockchain.HandleError(err)
@@ -150,6 +178,14 @@ func (cli *CommandLine) Run() {
 	default:
 		cli.printUsage()
 		runtime.Goexit()
+	}
+
+	if createWalletCmd.Parsed() {
+		cli.createWalet()
+	}
+
+	if listAddressCmd.Parsed() {
+		cli.listAddresses()
 	}
 
 	if getBlockCmd.Parsed() {
