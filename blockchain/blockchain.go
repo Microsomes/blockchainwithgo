@@ -101,7 +101,6 @@ func InitBlockchain(address string) *BlockChain {
 }
 
 func (chain *BlockChain) AddBlock(transactions []*Transaction) {
-
 	var lastHash []byte
 
 	err := chain.Database.View(func(txn *badger.Txn) error {

@@ -77,10 +77,8 @@ func (cli *CommandLine) send(from, to string, amount int) {
 	defer chain.Database.Close()
 
 	tx := blockchain.NewTransaction(from, to, amount, chain)
-
 	chain.AddBlock([]*blockchain.Transaction{tx})
-	fmt.Println("Success")
-
+	fmt.Println("Success!")
 }
 
 func (cli *CommandLine) run() {
@@ -141,6 +139,9 @@ func (cli *CommandLine) run() {
 			sendCmd.Usage()
 			runtime.Goexit()
 		}
+
+		cli.send(*sendFrom, *sendTo, *sendAmount)
+
 	}
 
 }
