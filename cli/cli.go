@@ -113,7 +113,7 @@ func (cli *CommandLine) send(from, to string, amount int) {
 	fmt.Println("Success!")
 }
 
-func (cli *CommandLine) run() {
+func (cli *CommandLine) Run() {
 	cli.validateArgs()
 
 	getBalanceCmd := flag.NewFlagSet("getbalance", flag.ExitOnError)
